@@ -11,8 +11,9 @@ Phony collects and abstracts much of the tedium and mystery associated with work
 1. Pulseaudio 7
 
 _Note: The particular versions of these dependencies may need to be built from source.  See Appendix B_
+
 _Note for ASUS Tinker Brot: need to pip install pyalsaaudio (version 0.8.4) as the version installed by
-_sudo apt-get install python-alsaaudio (version 0.7-1) is too old missing API does not work with phony.
+sudo apt-get install python-alsaaudio (version 0.7-1) is too old missing API does not work with phony._
 
 # Installation
 
@@ -129,8 +130,8 @@ if __name__ == '__main__':
   service.run()
 ```
 
-_Note: Added phony_service.py with async handlers to test dial (press key d) and answer (press key a)
-_functions quickly with iphone (6 works!). To motivate to pursue project further :-)
+_Note: Added phony_service.py in test/ with async handlers to test dial (press key d) and answer (press key a)
+functions quickly with iphone / android phone to show it works and motivate pursueing your project further :-)_
 
 # Appendix A: Hardware
 
@@ -152,7 +153,7 @@ Tested bluetooth adapters:
 | Panda Bluetooth 4.0 (USBCSR8510 A10) | Yes |
 | Plugable USB Bluetooth 4.0 (BCM20702A0)<sup>1</sup> | Yes |
 | Raspberry Pi 3 integrated Bluetooth (BCM43438)<sup>2</sup> | No |
-| ASUS Tinker Brot (internal BT, mic, and headphone)<sup>2</sup> | Yes |
+| ASUS Tinker Brot (integrated BT, mic, and headphone) | Yes |
 
 _1 If you are using a BCM20702A0, you may need to ensure that an updated firmware payload is being used.  [See this discussion](http://plugable.com/2014/06/23/plugable-usb-bluetooth-adapter-solving-hfphsp-profile-issues-on-linux)_
 
