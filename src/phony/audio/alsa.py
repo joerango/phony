@@ -77,6 +77,11 @@ class Alsa(ClassLogger):
             mic = alsaaudio.Mixer(control = 'Mic', cardindex = card_index)
             speaker = alsaaudio.Mixer(control = 'Speaker', cardindex = card_index)
             break
+          else:
+            if 'Mic' in mixers and 'Headphone' in mixers:
+              mic = alsaaudio.Mixer(control = 'Mic', cardindex = card_index)
+              speaker = alsaaudio.Mixer(control = 'Headphone', cardindex = card_index)
+              break
 
         except Exception:
           pass
@@ -86,7 +91,10 @@ class Alsa(ClassLogger):
       if 'Mic' in mixers and 'Speaker' in mixers:
         mic = alsaaudio.Mixer(control = 'Mic', cardindex = card_index)
         speaker = alsaaudio.Mixer(control = 'Speaker', cardindex = card_index)
-
+      else:
+        if 'Mic' in mixers and 'Headphone' in mixers:
+          mic = alsaaudio.Mixer(control = 'Mic', cardindex = card_index)
+          speaker = alsaaudio.Mixer(control = 'Headphone', cardindex = card_index)
     return speaker, mic
 
   def _can_mute_microphone_playback(self):
@@ -104,7 +112,7 @@ class Alsa(ClassLogger):
     self.log().debug('Speaker playback volume: %s' % self._speaker_mixer.getvolume(alsaaudio.PCM_PLAYBACK))
     self.log().debug('Speaker playback mute: %s' % self._speaker_mixer.getmute())
     self.log().debug('Microphone mixer capabilities: %s' % self._microphone_mixer.switchcap())
-    self.log().debug('Microphone playback mute: %s' % self._microphone_mixer.getmute())
+    # self.log().debug('Microphone playback mute: %s' % self._microphone_mixer.getmute())
     self.log().debug('Microphone capture enabled: %s' % self._microphone_mixer.getrec())
     self.log().debug('Microphone playback volume: %s' % self._microphone_mixer.getvolume(alsaaudio.PCM_PLAYBACK))
     self.log().debug('Microphone capture volume: %s' % self._microphone_mixer.getvolume(alsaaudio.PCM_CAPTURE))
