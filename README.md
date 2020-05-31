@@ -140,7 +140,7 @@ functions quickly with iphone / android phone to show it works and motivate purs
 Phony requires an audio adapter that has an audio input and an output.  If you intend to use phony on a device like a Raspberry Pi, you will need an external audio adapter, like this one:
 
 * [USB Audio Adapter](https://www.amazon.com/Sabrent-External-Adapter-Windows-AU-MMSA/dp/B00IRVQ0F8)
-
+* [USB Sound Card Adapter] from SWEEX uses Mic and PCM instead of Mic and Speaker but works well
 
 ## Bluetooth
 
