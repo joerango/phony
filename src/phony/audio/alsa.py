@@ -82,6 +82,11 @@ class Alsa(ClassLogger):
               mic = alsaaudio.Mixer(control = 'Mic', cardindex = card_index)
               speaker = alsaaudio.Mixer(control = 'Headphone', cardindex = card_index)
               break
+            else:
+              if 'Mic' in mixers and 'PCM' in mixers:
+                mic = alsaaudio.Mixer(control = 'Mic', cardindex = card_index)
+                speaker = alsaaudio.Mixer(control = 'PCM', cardindex = card_index)
+                break
 
         except Exception:
           pass
