@@ -5,42 +5,46 @@ p1 = 5
 p2 = 6
 state = 0
 
+
 def setup():
-  GPIO.setmode(GPIO.BCM)
+    GPIO.setmode(GPIO.BCM)
 
-  GPIO.setup(p1, GPIO.OUT)
-  GPIO.setup(p2, GPIO.OUT)
+    GPIO.setup(p1, GPIO.OUT)
+    GPIO.setup(p2, GPIO.OUT)
 
-  GPIO.output(p1, GPIO.LOW)
-  GPIO.output(p2, GPIO.LOW)
+    GPIO.output(p1, GPIO.LOW)
+    GPIO.output(p2, GPIO.LOW)
+
 
 def toggle():
-  global state
+    global state
 
-  GPIO.output(p1, GPIO.LOW)
-  GPIO.output(p2, GPIO.LOW)
-
-  if state:
     GPIO.output(p1, GPIO.LOW)
-    GPIO.output(p2, GPIO.HIGH)
-  else:
     GPIO.output(p2, GPIO.LOW)
-    GPIO.output(p1, GPIO.HIGH)
 
-  state = not state
+    if state:
+        GPIO.output(p1, GPIO.LOW)
+        GPIO.output(p2, GPIO.HIGH)
+    else:
+        GPIO.output(p2, GPIO.LOW)
+        GPIO.output(p1, GPIO.HIGH)
 
-  sleep(0.1)
+    state = not state
 
-  GPIO.output(p1, GPIO.LOW)
-  GPIO.output(p2, GPIO.LOW)
+    sleep(0.1)
+
+    GPIO.output(p1, GPIO.LOW)
+    GPIO.output(p2, GPIO.LOW)
+
 
 def main():
-  setup()
+    setup()
 
-  while(True):
-    toggle()
+    while (True):
+        toggle()
 
-    raw_input('Flip relay?')
+        eval(input('Flip relay?'))
+
 
 if __name__ == '__main__':
-  main()
+    main()

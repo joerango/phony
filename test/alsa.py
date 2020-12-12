@@ -17,16 +17,17 @@
 ## python mixertest.py Master 0,[un]mute   # [un]mute channel 0
 ## python mixertest.py Capture 0,[un]rec   # [dis/en]able capture on channel 0
 
-from __future__ import print_function
 
 import sys
 import getopt
 import alsaaudio
 
+
 def list_mixers(kwargs):
     print("Available mixer controls:")
     for m in alsaaudio.mixers(**kwargs):
         print("  '%s'" % m)
+
 
 def show_mixer(name, kwargs):
     # Demonstrates how mixer settings are queried.
@@ -41,8 +42,8 @@ def show_mixer(name, kwargs):
                                    ' '.join(mixer.switchcap())))
     volumes = mixer.getvolume()
     for i in range(len(volumes)):
-        print("Channel %i volume: %i%%" % (i,volumes[i]))
-        
+        print("Channel %i volume: %i%%" % (i, volumes[i]))
+
     try:
         mutes = mixer.getmute()
         for i in range(len(mutes)):
@@ -60,6 +61,7 @@ def show_mixer(name, kwargs):
     except alsaaudio.ALSAAudioError:
         # May not support recording
         pass
+
 
 def set_mixer(name, args, kwargs):
     # Demonstrates how to set mixer settings
@@ -82,8 +84,8 @@ def set_mixer(name, args, kwargs):
             mixer.setmute(1, channel)
         else:
             mixer.setmute(0, channel)
-        
-    elif args in ['rec','unrec']:
+
+    elif args in ['rec', 'unrec']:
         # Enable/disable recording
         if args == 'rec':
             mixer.setrec(1, channel)
@@ -96,10 +98,12 @@ def set_mixer(name, args, kwargs):
         volume = int(args)
         mixer.setvolume(volume, channel)
 
+
 def usage():
     print('usage: mixertest.py [-c <card>] [ <control>[,<value>]]',
           file=sys.stderr)
     sys.exit(2)
+
 
 if __name__ == '__main__':
 
@@ -107,9 +111,9 @@ if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'c:d:?h')
     for o, a in opts:
         if o == '-c':
-            kwargs = { 'cardindex': int(a) }
+            kwargs = {'cardindex': int(a)}
         elif o == '-d':
-            kwargs = { 'device': a }
+            kwargs = {'device': a}
         else:
             usage()
 
