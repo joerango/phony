@@ -8,18 +8,20 @@ class Alsa(ClassLogger):
 
     _card_index = None
     _microphone_mixer = None
+    _capture_mixer = None
     _speaker_mixer = None
 
     def __init__(self, card_index=-1):
         ClassLogger.__init__(self)
 
         self._card_index = card_index
-        self._speaker_mixer, self._microphone_mixer = \
+        self._speaker_mixer, self._capture_mixer, self._microphone_mixer = \
             self._find_suitable_mixers(self._card_index)
 
         if not self._speaker_mixer or not self._microphone_mixer:
             raise Exception(
-                'An audio device with a speaker and a microphone mixer is required, but could not be found. card_index = "%s"' % self._card_index)
+                'An audio device with a speaker and a microphone mixer is required, but could not be found. '
+                'card_index = "%s"' % self._card_index)
 
     @ClassLogger.TraceAs.call()
     def start(self):
@@ -30,14 +32,14 @@ class Alsa(ClassLogger):
         if self._can_mute_microphone_playback():
             self._microphone_mixer.setmute(1)
         if self._can_mute_microphone_capture():
-            self._microphone_mixer.setrec(0)
+            self._capture_mixer.setrec(0)
 
     @ClassLogger.TraceAs.event()
     def unmute_microphone(self):
         if self._can_mute_microphone_playback():
             self._microphone_mixer.setmute(0)
         if self._can_mute_microphone_capture():
-            self._microphone_mixer.setrec(1)
+            self._capture_mixer.setrec(1)
 
     @ClassLogger.TraceAs.event()
     def mute_speaker(self):
@@ -69,46 +71,59 @@ class Alsa(ClassLogger):
     def _find_suitable_mixers(self, card_index=-1):
         mic = None
         speaker = None
+        capture = None
 
         if card_index < 0:
             for card_index in range(0, Alsa.CARD_INDICES_TO_TRY):
                 try:
+                    mic = None
+                    speaker = None
+                    capture = None
+
                     mixers = alsaaudio.mixers(cardindex=card_index)
-
-                    if 'Mic' in mixers and 'Speaker' in mixers:
+                    if 'Mic' in mixers:
                         mic = alsaaudio.Mixer(control='Mic', cardindex=card_index)
-                        speaker = alsaaudio.Mixer(control='Speaker', cardindex=card_index)
-                        break
-                    else:
-                        if 'Mic' in mixers and 'Headphone' in mixers:
-                            mic = alsaaudio.Mixer(control='Mic', cardindex=card_index)
-                            speaker = alsaaudio.Mixer(control='Headphone', cardindex=card_index)
-                            break
-                        else:
-                            if 'Mic' in mixers and 'PCM' in mixers:
-                                mic = alsaaudio.Mixer(control='Mic', cardindex=card_index)
-                                speaker = alsaaudio.Mixer(control='PCM', cardindex=card_index)
-                                break
 
+                    if 'Capture' in mixers:
+                        capture = alsaaudio.Mixer(control='Capture', cardindex=card_index)
+
+                    if 'Speaker' in mixers:
+                        speaker = alsaaudio.Mixer(control='Speaker', cardindex=card_index)
+                    elif 'Headphone' in mixers:
+                        speaker = alsaaudio.Mixer(control='Headphone', cardindex=card_index)
+                    elif 'PCM' in mixers:
+                        speaker = alsaaudio.Mixer(control='PCM', cardindex=card_index)
+
+                    if mic is not None and speaker is not None and capture is not None:
+                        break
                 except Exception:
                     pass
         else:
-            mixers = alsaaudio.mixers(cardindex=card_index)
+            mic = None
+            speaker = None
+            capture = None
 
-            if 'Mic' in mixers and 'Speaker' in mixers:
+            mixers = alsaaudio.mixers(cardindex=card_index)
+            if 'Mic' in mixers:
                 mic = alsaaudio.Mixer(control='Mic', cardindex=card_index)
+
+            if 'Capture' in mixers:
+                capture = alsaaudio.Mixer(control='Capture', cardindex=card_index)
+
+            if 'Speaker' in mixers:
                 speaker = alsaaudio.Mixer(control='Speaker', cardindex=card_index)
-            else:
-                if 'Mic' in mixers and 'Headphone' in mixers:
-                    mic = alsaaudio.Mixer(control='Mic', cardindex=card_index)
-                    speaker = alsaaudio.Mixer(control='Headphone', cardindex=card_index)
-        return speaker, mic
+            elif 'Headphone' in mixers:
+                speaker = alsaaudio.Mixer(control='Headphone', cardindex=card_index)
+            elif 'PCM' in mixers:
+                speaker = alsaaudio.Mixer(control='PCM', cardindex=card_index)
+
+        return speaker, capture, mic
 
     def _can_mute_microphone_playback(self):
         return 'Playback Mute' in self._microphone_mixer.switchcap()
 
     def _can_mute_microphone_capture(self):
-        return 'Capture Mute' in self._microphone_mixer.switchcap()
+        return 'Capture Mute' in self._capture_mixer.switchcap()
 
     def _can_mute_speaker_playback(self):
         return 'Playback Mute' in self._speaker_mixer.switchcap()
@@ -119,8 +134,9 @@ class Alsa(ClassLogger):
         self.log().debug('Speaker playback volume: %s' % self._speaker_mixer.getvolume(alsaaudio.PCM_PLAYBACK))
         self.log().debug('Speaker playback mute: %s' % self._speaker_mixer.getmute())
         self.log().debug('Microphone mixer capabilities: %s' % self._microphone_mixer.switchcap())
-        # self.log().debug('Microphone playback mute: %s' % self._microphone_mixer.getmute())
-        self.log().debug('Microphone capture enabled: %s' % self._microphone_mixer.getrec())
+        self.log().debug('Capture mixer capabilities: %s' % self._capture_mixer.switchcap())
+        self.log().debug('Microphone playback mute: %s' % self._microphone_mixer.getmute())
+        self.log().debug('Microphone capture enabled: %s' % self._capture_mixer.getrec())
         self.log().debug('Microphone playback volume: %s' % self._microphone_mixer.getvolume(alsaaudio.PCM_PLAYBACK))
         self.log().debug('Microphone capture volume: %s' % self._microphone_mixer.getvolume(alsaaudio.PCM_CAPTURE))
 
